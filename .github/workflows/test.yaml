@@ -1,0 +1,71 @@
+---
+name: CI
+on: pull_request
+
+jobs:
+  test:
+    name: Run tests
+    strategy:
+      matrix:
+        neovim_branch:
+          - v0.6.1
+          - v0.7.0
+          - master
+    runs-on: ubuntu-latest
+    env:
+      PLENARY_PATH: plenary.nvim
+      NEOVIM_PATH: neovim
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: clone plenary.nvim
+        uses: actions/checkout@v3
+        with:
+          repository: nvim-lua/plenary.nvim
+          path: ${{ env.PLENARY_PATH }}
+
+      # Copied/adapted from lewis6991/gitsigns.nvim
+      - name: Setup build dependencies
+        run: |
+          sudo apt update &&
+          sudo apt install -y \
+            autoconf \
+            automake \
+            cmake \
+            g++ \
+            gettext \
+            gperf \
+            libjemalloc-dev \
+            libluajit-5.1-dev \
+            libmsgpack-dev \
+            libtermkey-dev \
+            libtool \
+            libtool-bin \
+            libunibilium-dev \
+            libvterm-dev \
+            lua-bitop \
+            lua-lpeg \
+            lua-mpack \
+            ninja-build \
+            pkg-config \
+            unzip
+
+      - name: clone Neovim
+        uses: actions/checkout@v3
+        with:
+          repository: neovim/neovim
+          submodules: recursive
+          ref: ${{ matrix.neovim_branch }}
+          path: ${{ env.NEOVIM_PATH }}
+
+      - name: Build Neovim
+        run: |
+          cd $NEOVIM_PATH
+          make CMAKE_BUILD_TYPE=RelWithDebInfo
+          sudo make install
+
+      - name: Run tests
+        run: |
+          echo $PLENARY_PATH
+          make test PLENARY_PATH=$PLENARY_PATH
