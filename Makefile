@@ -1,4 +1,4 @@
-TEST_DIR=lua/emacscommandline/tests/
+TEST_DIR=lua/emcl/tests/
 MINIMAL_LUA=${TEST_DIR}minimal.lua
 .PHONY: test
 test:

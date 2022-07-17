@@ -1,6 +1,6 @@
 local fn = vim.fn
 
-local Funcs = require "emacscommandline.funcs"
+local Funcs = require "emcl.funcs"
 local Main = {}
 
 Main.new = function()
@@ -89,7 +89,7 @@ end
 
 function Main:set_mappings()
   for name, v in pairs(self.config.mappings) do
-    local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emacscommandline'(']] .. name .. "')<CR>")
+    local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emcl'(']] .. name .. "')<CR>")
     if type(v) == "string" then
       v = { v }
     end
