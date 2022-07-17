@@ -1,4 +1,4 @@
-local utils = require "emacscommandline.tests.utils"
+local utils = require "emcl.tests.utils"
 
 --[[
   m => method
@@ -98,7 +98,7 @@ for _, c in ipairs {
 } do
   describe(c.m, function()
     it(("%s => %s%s"):format(c.b, c.a, c.h and ", h = " .. vim.inspect(c.h) or ""), function()
-      local funcs = require("emacscommandline.funcs").new()
+      local funcs = require("emcl.funcs").new()
       if c.br then
         funcs.register = c.br
       end

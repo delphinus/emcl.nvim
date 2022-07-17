@@ -1,4 +1,4 @@
-local main = require "emacscommandline.main"
+local main = require "emcl.main"
 
 return setmetatable({
   main = main,

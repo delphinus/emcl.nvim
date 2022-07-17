@@ -1,5 +1,5 @@
 local fn = vim.fn
-local Re = require "emacscommandline.re"
+local Re = require "emcl.re"
 local Funcs = {}
 
 Funcs.new = function(config)
@@ -147,7 +147,7 @@ function Funcs:DeleteBackwardsToWhiteSpace()
   local m = self.re.any_and_spaces(left)
   if m then
     self.register = m
-    local modified = left:sub(1, -#m - 1) .. right
+    local modified = left:sub(1, - #m - 1) .. right
     local new_pos = pos - #m
     self:save_undo_history(modified, new_pos)
     fn.setcmdpos(new_pos)
@@ -167,7 +167,7 @@ function Funcs:BackwardKillWord()
   local m = self.re.word_and_others(left) or self.re.chars_and_others(left)
   if m then
     self.register = m
-    local modified = left:sub(1, -#m - 1) .. right
+    local modified = left:sub(1, - #m - 1) .. right
     local new_pos = pos - #m
     self:save_undo_history(modified, new_pos)
     fn.setcmdpos(new_pos)
@@ -191,13 +191,13 @@ function Funcs:TransposeChar()
   if right == "" then
     local head = self.re.back_char(left)
     local back = self.re.back_back_char(left)
-    local new_line = left:sub(1, -#head - #back - 1) .. head .. back
+    local new_line = left:sub(1, - #head - #back - 1) .. head .. back
     self:save_undo_history(new_line, pos)
     return new_line
   end
   local head = self.re.head_char(right)
   local back = self.re.back_char(left)
-  local new_left = left:sub(1, -#back - 1) .. head
+  local new_left = left:sub(1, - #back - 1) .. head
   local new_right = back .. right:sub(#head + 1)
   local new_line = new_left .. new_right
   local new_pos = pos + #back
@@ -216,10 +216,10 @@ function Funcs:TransposeWord()
   local left_part = self.re.word_and_spaces(left) or self.re.word_and_spaces(left)
   local right_part = self.re.spaces_and_word(right) or self.re.spaces_and_word(right)
   if left_part and right_part then
-    new_left = left:sub(1, -#left_part)
+    new_left = left:sub(1, - #left_part)
     new_right = right:sub(#right_part)
     local left_spaces = self.re.back_spaces(left_part)
-    left_word = left_part:sub(1, -#left_spaces)
+    left_word = left_part:sub(1, - #left_spaces)
     local right_spaces = self.re.head_spaces(right_part)
     right_word = right_part:sub(#right_spaces)
     spaces = left_spaces .. right_spaces
