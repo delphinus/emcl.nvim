@@ -88,7 +88,16 @@ function Main:setup(config)
 end
 
 function Main:set_mappings()
-  for name, v in pairs(self.config.mappings) do
+  local mappings = {}
+  if self.config.enabled == "all" then
+    mappings = self.config.mappings
+  else
+    for _, v in ipairs(self.config.enabled) do
+      mappings[v] = self.config.mappings[v]
+    end
+  end
+
+  for name, v in pairs(mappings) do
     local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emcl'(']] .. name .. "')<CR>")
     if type(v) == "string" then
       v = { v }
