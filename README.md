@@ -48,14 +48,17 @@ require("emcl").setup {}
 
 ```lua
 use {
-  "delphinus/emcl.nvim' ,
+  "delphinus/emcl.nvim",
   config = function()
     require("emcl").setup {}
   end,
 }
 ```
 
-## Features
+## Mappings
+
+You can change these mappings below or use some ones only. See doc for the
+detail (call `:h emcl`).
 
 | Feature                     | Default mapping       |
 |-----------------------------|-----------------------|
@@ -80,12 +83,52 @@ use {
 | TransposeWord               | `<M-t>`               |
 | Yank                        | `<C-y>`               |
 | Undo                        | `<C-_>`, `<C-x><C-y>` |
-| YankLastArg                 | `<M-.>, `<M-_>`       |
+| YankLastArg                 | `<M-.>`, `<M-_>`      |
 | ToggleExternalCommand       | `<C-z>`               |
 
 ## Options
 
-TBD
+### `enabled`
+
+* type: string or table
+* default: `all`
+
+In default, all mappings are set in calling `setup()`. If you want to use some
+mappings only, you can use this option with a table containing names.
+
+```lua
+require("emcl").setup {
+  enabled = { "ForwardChar", "EndOfLine" },
+}
+```
+
+### `no_map_at_end`
+
+* type: table
+* default: `{ "ForwardChar", "EndOfLine", "DeleteChar", "KillLine" }`
+
+### `only_when_empty`
+
+* type: table
+* default: `{ "SearchCommandLine" }`
+
+### `old_map_prefix`
+
+* type: string
+
+* default: `<C-o>`
+
+### `word_char_character_class`
+
+* type: string
+* default: `"a-zA-Z0-9_À-ÖØ-öø-ÿ"`
+
+### `max_undo_history`
+
+* type: string
+* default: `100`
+
+### 
 
 ## Todo
 
