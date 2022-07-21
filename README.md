@@ -57,8 +57,10 @@ use {
 
 ## Mappings
 
-You can change these mappings below or use some ones only. See doc for the
-detail (call `:h emcl`).
+You can change these mappings below or use some ones only. See [doc][] for the
+detail (type `:h emcl` in Neovim).
+
+[doc]: doc/emcl.txt
 
 | Feature                     | Default mapping       |
 |-----------------------------|-----------------------|
