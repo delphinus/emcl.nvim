@@ -49,7 +49,7 @@ Main.new = function()
       YankLastArg = { "<M-.>", "<M-_>" },
       ToggleExternalCommand = "<C-z>",
     },
-    no_map_at_end = { "FowardChar", "EndOfLine", "DeleteChar", "KillLine" },
+    no_map_at_end = { "ForwardChar", "EndOfLine", "DeleteChar", "KillLine" },
     only_when_empty = { "SearchCommandLine" },
     old_map_prefix = "<C-o>",
     word_char_character_class = "a-zA-Z0-9_À-ÖØ-öø-ÿ",
@@ -109,7 +109,7 @@ function Main:set_mappings()
       else
         vim.keymap.set("c", key, definition)
       end
-      if this.config.old_map_prefix ~= "" then
+      if self.config.old_map_prefix ~= "" then
         local old_map = self.config.old_map_prefix .. key
         if fn.maparg(old_map, "c") == "" then
           vim.keymap.set("c", old_map, key)
