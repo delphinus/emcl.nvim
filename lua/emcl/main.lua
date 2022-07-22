@@ -109,9 +109,11 @@ function Main:set_mappings()
       else
         vim.keymap.set("c", key, definition)
       end
-      local old_map = self.config.old_map_prefix .. key
-      if fn.maparg(old_map, "c") == "" then
-        vim.keymap.set("c", old_map, key)
+      if this.config.old_map_prefix ~= "" then
+        local old_map = self.config.old_map_prefix .. key
+        if fn.maparg(old_map, "c") == "" then
+          vim.keymap.set("c", old_map, key)
+        end
       end
     end
   end
