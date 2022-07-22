@@ -48,14 +48,19 @@ require("emcl").setup {}
 
 ```lua
 use {
-  "delphinus/emcl.nvim' ,
+  "delphinus/emcl.nvim",
   config = function()
     require("emcl").setup {}
   end,
 }
 ```
 
-## Features
+## Mappings
+
+You can change these mappings below or use some ones only. See [doc][] for the
+detail or options (type `:h emcl` in Neovim).
+
+[doc]: doc/emcl.txt
 
 | Feature                     | Default mapping       |
 |-----------------------------|-----------------------|
@@ -80,12 +85,8 @@ use {
 | TransposeWord               | `<M-t>`               |
 | Yank                        | `<C-y>`               |
 | Undo                        | `<C-_>`, `<C-x><C-y>` |
-| YankLastArg                 | `<M-.>, `<M-_>`       |
+| YankLastArg                 | `<M-.>`, `<M-_>`      |
 | ToggleExternalCommand       | `<C-z>`               |
-
-## Options
-
-TBD
 
 ## Todo
 

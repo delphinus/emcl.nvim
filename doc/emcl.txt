@@ -1,0 +1,211 @@
+emcl.txt	Emacs-like mappings in command line  
+
+Author: delphinus <me@delphinus.dev>
+License: MIT license
+
+CONTENTS							 *emcl-contents*
+
+Introduction		|emcl-introduction|
+Install			|emcl-install|
+Usage			|emcl-usage|
+Features		|emcl-features|
+Options			|emcl-options|
+Caveats			|emcl-caveats|
+References		|emcl-references|
+
+
+==============================================================================
+INTRODUCTION						     *emcl-introduction*
+
+This plugin enables to use Emacs-like mappings in the command line.
+
+
+==============================================================================
+INSTALL								  *emcl-install*
+
+Clone this repo into the dir for |packages|.
+>
+	git clone https://github.com/delphinus/emcl.nvim \
+	  ~/.local/share/nvim/site/pack/foo/start/emcl.nvim
+
+And call `setup()` in your |init.lua|.
+>
+	require("emcl").setup {}
+
+Or you can use any your favorite plugin manager.
+>
+	-- for packer.nvim
+	use {
+	  "delphinus/emcl.nvim",
+	  config = function()
+	    require("emcl").setup {}
+	  end,
+	}
+
+
+==============================================================================
+FEATURES						         *emcl-features*
+
+You can use these mappings below in the command line. All mappings can be
+changed by |emcl-options-mappings|.
+
+    ForwardChar                  <C-f>
+    BackwardChar                 <C-b>
+    BeginningOfLine              <C-a>
+    EndOfLine                    <C-e>
+    OlderMatchingCommandLine     <C-p>
+    NewerMatchingCommandLine     <C-n>
+    FirstLineInHistory           <M-<>
+    LastLineInHistory            <M->>
+    SearchCommandLine            <C-r>
+    AbortCommand                 <C-g>
+    ForwardWord                  <M-f>
+    BackwardWord                 <M-b>
+    DeleteChar                   <Del>, <C-d>
+    BackwardDeleteChar           <BS>, <C-h>
+    KillWord                     <M-d>
+    DeleteBackwardsToWhiteSpace  <C-w>
+    BackwardKillWord             <M-BS>
+    TransposeChar                <C-t>
+    TransposeWord                <M-t>
+    Yank                         <C-y>
+    Undo                         <C-_>, <C-x><C-y>
+    YankLastArg                  <M-.>, <M-_>
+    ToggleExternalCommand        <C-z>
+
+If you want to know detail spec for these features, you should read spec file
+for each func: `lua/emcl/tests/funcs_spec.lua`.
+
+You can store chars into the "register" (This is not |registers|) with mappings
+that delete some chars. Then you can yank it into the line by <C-y> in default.
+>
+	       v-- the cursor is here.
+	abc def|
+
+Push <C-w> to cut chars.
+>
+	    v-- the cursor is here.
+	abc |
+
+Push <C-y> to yank cut chars
+>
+	       v-- the cursor is here.
+	abc def|
+
+<<C-y> again
+>
+	          v-- the cursor is here.
+	abc defdef|
+
+
+==============================================================================
+USAGE								*emcl-usage*
+
+Configuration example.
+>
+	require("emcl").setup {
+	  enabled = { "ForwardChar", "EndOfLine", "DeleteChar", "Undo" },
+	  mappings = {
+	    ForwardChar = "<A-f>",
+	    EndOfLine = "<A-e>",
+	  },
+	  no_map_at_end = { "ForwardChar" },
+	  only_when_empty = { "Undo" },
+	  old_map_prefix = "<A-o>",
+	  word_char_character_class = "a-zA-Z0-9",
+	  max_undo_history = 1000,
+	}
+
+
+==============================================================================
+OPTIONS								  *emcl-options*
+
+							  *emcl-options-enabled*
+enabled		(string or table)
+		In default, all mappings are set in calling `setup()`. If you
+		want to use some mappings only, you can use this option with a
+		table containing names.
+>
+		require("emcl").setup {
+		  enabled = { "ForwardChar", "EndOfLine" },
+		}
+<
+		Default: `"all"`
+
+mappings	(table)
+		You can set your own mappings here. This is merged into the
+		default mapping table, so you need not to define all mappings
+		you use.
+		When `enabled` is not `"all"` (and have a table with mapping
+		names), entries that key is not included in `enabled` table will
+		be ignored.
+>
+		-- Use custom mapping for ForwardChar and use default ones for
+		-- others.
+		require("emcl").setup {
+		  mappings = {
+		    ForwardChar = "<A-f>",
+		  },
+		}
+<
+		Default: a table with default mappings
+
+						    *emcl-options-no_map_at_end*
+no_map_at_end	(table)
+		Some mappings are already used in Vim. You can use these
+		mappings at the end of the line, and |emcl|'s mappings at other
+		positions. See |c_CTRL-F|, |c_CTRL-E|, |c_CTRL-D|, |c_CTRL-K|.
+
+		Default:
+		`{ "ForwardChar", "EndOfLine", "DeleteChar", "KillLine" }`
+
+						  *emcl-options-only_when_empty*
+only_when_empty	(string)
+		Like |emcl-options-no_map_at_end|, you can avoid some mappings
+		to use them only when the command line is empty. See |c_CTRL-R|.
+
+		Default: `{ "SearchCommandLine" }`
+
+old_map_prefix	(string)
+		When `setup()` is called, mappings overwrites existing ones, but
+		you can still call the original with <C-o> prefix. For example,
+		`ForwardChar` overwrites |c_CTRL-F|, but you can call it with
+		<C-o><C-f>. This option can change this and disable this
+		feature by `old_map_prefix = ""` .
+
+		NOTE: When the "prefix" mapping (<C-o><C-f>) is already mapped,
+		it does not overwrite this, so you cannot call the original.
+
+		Default: `"<C-o>"`
+
+word_char_character_class	(string)
+		Some mappings detects "word" by this regexp character class.
+		This should be written not with Lua's search pattern but with
+		Vimscript |regexp|.
+
+		Default: `"a-zA-Z0-9_À-ÖØ-öø-ÿ"`
+
+max_undo_history	(number)
+		You can restore a previous command line with `Undo` (<C-_>,
+		<C-x><C-y>). This plugin stores undo history with this count
+		apart from |cmdline-history|.
+
+		Default: `100`
+
+
+==============================================================================
+CAVEATS								  *emcl-caveats*
+
+The implementation of `TransposeWord` is incomplete.
+
+
+==============================================================================
+REFERENCES						       *emcl-references*
+
+This plugin borrows many ideas from `houtsnip/vim-emacscommandline`.
+
+https://github.com/houtsnip/vim-emacscommandline
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
