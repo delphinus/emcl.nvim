@@ -74,7 +74,9 @@ Emcl.new = function()
       max_undo_history = 100,
     },
     config = {},
-    log = Log.new(vim.schedule_wrap(vim.notify)),
+    log = Log.new(
+      vim.schedule_wrap(vim.notify) --[[@as function]]
+    ),
   }, { __index = Emcl })
 end
 
@@ -126,28 +128,34 @@ end
 ---@param mappings Mappings
 ---@return { [string]: fun(): nil }
 function Emcl:fn_map(mappings)
+  ---@param str string
+  ---@return string
+  local function replace_termcodes(str)
+    return vim.api.nvim_replace_termcodes(str, true, false, true) --[[@as string]]
+  end
+
   ---@type { [string]: fun(): nil }
   local fn_map = {}
+  local i = 0
   for name, v in pairs(mappings) do
     ---@type string
-    local definition_code = self.definitions[name]
-        and vim.api.nvim_replace_termcodes(self.definitions[name], true, false, true)
-      or nil
+    local definition_code = self.definitions[name] and replace_termcodes(self.definitions[name]) or nil
     local keys = type(v) == "string" and { v } or v
+
     for _, key in ipairs(keys) do
-      vim.keymap.set("c", key, key)
-      local code = vim.api.nvim_replace_termcodes(key, true, false, true)
-      if code then
-        fn_map[code] = definition_code
-            and function()
-              self.log:info("name: %s, key: %s, code: %s", name, key, definition_code)
-              vim.api.nvim_feedkeys(definition_code, "t", false)
-            end
-          or function()
-            self.log:info("name: %s, key: %s", name, key)
-            self:method(name)
+      i = i + 1
+      local map = ("<F%d>"):format(i)
+      local code = replace_termcodes(map)
+      vim.keymap.set("c", key, map)
+      fn_map[code] = definition_code
+          and function()
+            self.log:info("name: %s, key: %s, code: %s", name, key, definition_code)
+            vim.api.nvim_feedkeys(definition_code, "t", false)
           end
-      end
+        or function()
+          self.log:info("name: %s, key: %s", name, key)
+          self:method(name)
+        end
     end
   end
   return fn_map
