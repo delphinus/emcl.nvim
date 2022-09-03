@@ -1,5 +1,6 @@
 local fn = vim.fn
 local Funcs = require "emcl.funcs"
+local Log = require "emcl.log"
 
 ---@alias Mappings { [string]: string|string[] }
 
@@ -18,6 +19,7 @@ local Funcs = require "emcl.funcs"
 ---@field definitions Definitions
 ---@field default_config emcl.main.Config
 ---@field config emcl.main.Config
+---@field log emcl.log.Log
 local Emcl = {}
 
 ---@return emcl.main.Emcl
@@ -72,6 +74,7 @@ Emcl.new = function()
       max_undo_history = 100,
     },
     config = {},
+    log = Log.new(vim.schedule_wrap(vim.notify)),
   }, { __index = Emcl })
 end
 
@@ -110,34 +113,44 @@ function Emcl:set_mappings()
       return self.config.mappings[v]
     end, self.config.enabled)
   end
+  local fn_map = self:fn_map(mappings)
+  vim.on_key(function(key)
+    if fn.mode() == "c" then
+      if fn_map[key] then
+        fn_map[key]()
+      end
+    end
+  end)
+end
 
+---@param mappings Mappings
+---@return { [string]: fun(): nil }
+function Emcl:fn_map(mappings)
+  ---@type { [string]: fun(): nil }
+  local fn_map = {}
   for name, v in pairs(mappings) do
-    local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emcl'(']] .. name .. "')<CR>")
+    ---@type string
+    local definition_code = self.definitions[name]
+        and vim.api.nvim_replace_termcodes(self.definitions[name], true, false, true)
+      or nil
     local keys = type(v) == "string" and { v } or v
     for _, key in ipairs(keys) do
-      if vim.tbl_contains(self.config.no_map_at_end, name) then
-        ---@return string
-        vim.keymap.set("c", key, function()
-          local str = fn.getcmdline()
-          return fn.getcmdpos() > #str and key or definition
-        end, { expr = true })
-      elseif vim.tbl_contains(self.config.only_when_empty, name) then
-        ---@return string
-        vim.keymap.set("c", key, function()
-          local str = fn.getcmdline()
-          return #str > 0 and key or definition
-        end, { expr = true })
-      else
-        vim.keymap.set("c", key, definition)
-      end
-      if self.config.old_map_prefix ~= "" then
-        local old_map = self.config.old_map_prefix .. key
-        if fn.maparg(old_map, "c") == "" then
-          vim.keymap.set("c", old_map, key)
-        end
+      vim.keymap.set("c", key, key)
+      local code = vim.api.nvim_replace_termcodes(key, true, false, true)
+      if code then
+        fn_map[code] = definition_code
+            and function()
+              self.log:info("name: %s, key: %s, code: %s", name, key, definition_code)
+              vim.api.nvim_feedkeys(definition_code, "t", false)
+            end
+          or function()
+            self.log:info("name: %s, key: %s", name, key)
+            self:method(name)
+          end
       end
     end
   end
+  return fn_map
 end
 
 ---@param name string
