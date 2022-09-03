@@ -1,12 +1,13 @@
-local main = require "emcl.main"
+local Emcl = require "emcl.main"
+local emcl = Emcl.new()
 
 return setmetatable({
-  main = main,
+  emcl = emcl,
   setup = function(config)
-    main:setup(config)
+    emcl:setup(config)
   end,
 }, {
   __call = function(_, name)
-    return main:method(name)()
+    return emcl:method(name)()
   end,
 })
