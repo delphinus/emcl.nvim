@@ -6,6 +6,8 @@ local Main = {}
 Main.new = function()
   local self = setmetatable({}, { __index = Main })
 
+  self.ns = vim.api.nvim_create_namespace "emcl"
+
   self.definitions = {
     ForwardChar = "<Right>",
     BackwardChar = "<Left>",
@@ -90,7 +92,24 @@ function Main:set_mappings()
     end
   end
 
+  local on_key_settings = {}
+
   for name, v in pairs(mappings) do
+    if type(v) == "string" then
+      v = { v }
+    end
+    for _, key in ipairs(v) do
+      local definition = self.definitions[name]
+      if definition then
+        vim.keymap.set("c", key, definition, { expr = true })
+      else
+        local code = vim.api.nvim_replace_termcodes(key, true, false, true)
+        on_key_settings[code] = name
+        vim.keymap.set("c", key, key)
+      end
+    end
+
+    --[=[
     local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emcl'(']] .. name .. "')<CR>")
     if type(v) == "string" then
       v = { v }
@@ -116,7 +135,29 @@ function Main:set_mappings()
         end
       end
     end
+    ]=]
   end
+
+  vim.notify(vim.inspect(on_key_settings))
+
+  vim.api.nvim_create_autocmd("CmdlineEnter", {
+    callback = function()
+      vim.on_key(function(key)
+        if vim.fn.mode() ~= "c" then
+          return
+        end
+        if on_key_settings[key] then
+          vim.notify(on_key_settings[key])
+          require "emcl" (on_key_settings[key])
+        end
+      end, self.ns)
+    end,
+  })
+  vim.api.nvim_create_autocmd("CmdlineLeave", {
+    callback = function()
+      vim.on_key(nil, self.ns)
+    end,
+  })
 end
 
 function Main:method(name)

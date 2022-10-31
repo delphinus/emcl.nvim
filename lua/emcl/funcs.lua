@@ -150,16 +150,14 @@ function Funcs:DeleteBackwardsToWhiteSpace()
     local modified = left:sub(1, - #m - 1) .. right
     local new_pos = pos - #m
     self:save_undo_history(modified, new_pos)
-    fn.setcmdpos(new_pos)
-    return modified
+    fn.setcmdline(modified, new_pos)
   end
   m = self.re.spaces(left)
   if m then
     self.register = m
-    fn.setcmdpos(1)
-    return right
+    fn.setcmdline(right, 1)
   end
-  return line
+  fn.setcmdline(line)
 end
 
 function Funcs:BackwardKillWord()
@@ -171,6 +169,7 @@ function Funcs:BackwardKillWord()
     local new_pos = pos - #m
     self:save_undo_history(modified, new_pos)
     fn.setcmdpos(new_pos)
+    fn.setcmdline(modified)
     return modified
   end
   m = self.re.spaces(left)
@@ -179,6 +178,7 @@ function Funcs:BackwardKillWord()
     fn.setcmdpos(1)
     return right
   end
+  fn.setcmdline(line)
   return line
 end
 
