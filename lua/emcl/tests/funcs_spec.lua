@@ -109,7 +109,7 @@ for _, c in ipairs {
         utils.set_hist(c.h)
       end
       utils.set_linepos(c.b)
-      utils.set_line(funcs[c.m](funcs))
+      funcs[c.m](funcs)
       assert.are.same(utils.expand_linepos(c.a), utils.get_linepos())
       if c.r then
         assert.are.same(c.r, funcs.register)
