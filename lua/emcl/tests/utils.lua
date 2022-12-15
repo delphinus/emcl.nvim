@@ -7,7 +7,8 @@ end
 vim.fn.getcmdpos = function()
   return cmdpos
 end
-vim.fn.setcmdpos = function(pos)
+vim.fn.setcmdline = function(str, pos)
+  cmdline = str
   cmdpos = pos
 end
 vim.fn.histnr = function(_)
@@ -33,10 +34,6 @@ return {
 
   get_linepos = function()
     return { cmdline, cmdpos }
-  end,
-
-  set_line = function(str)
-    cmdline = str
   end,
 
   set_hist = function(h)

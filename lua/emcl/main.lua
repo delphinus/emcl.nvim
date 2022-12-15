@@ -90,25 +90,39 @@ function Main:set_mappings()
     end
   end
 
+  local function to_map(list)
+    local map = {}
+    for _, v in ipairs(list) do
+      map[v] = true
+    end
+    return map
+  end
+
+  local no_map_at_end = to_map(self.config.no_map_at_end)
+  local only_when_empty = to_map(self.config.only_when_empty)
+
   for name, v in pairs(mappings) do
-    local definition = self.definitions[name] or ([[<C-\>ev:lua.require'emcl'(']] .. name .. "')<CR>")
     if type(v) == "string" then
       v = { v }
     end
     for _, key in ipairs(v) do
-      if self.config.no_map_at_end[name] then
-        vim.keymap.set("c", key, function()
-          local str = fn.getcmdline()
-          return fn.getcmdpos() > #str and key or definition
-        end, { expr = true })
-      elseif self.config.only_when_empty[name] then
-        vim.keymap.set("c", key, function()
-          local str = fn.getcmdline()
-          return #str > 0 and key or definition
-        end, { expr = true })
-      else
-        vim.keymap.set("c", key, definition)
-      end
+      vim.keymap.set("c", key, function()
+        local expr = self.definitions[name]
+        if no_map_at_end[name] then
+          if fn.getcmdpos() > #fn.getcmdline() then
+            expr = key
+          end
+        elseif only_when_empty[name] then
+          if fn.getcmdline() ~= "" then
+            expr = key
+          end
+        end
+        if expr then
+          return expr
+        end
+        require "emcl"(name)
+      end, { expr = true })
+
       if self.config.old_map_prefix ~= "" then
         local old_map = self.config.old_map_prefix .. key
         if fn.maparg(old_map, "c") == "" then
