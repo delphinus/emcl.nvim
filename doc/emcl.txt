@@ -120,8 +120,7 @@ Configuration example.
 ==============================================================================
 OPTIONS								  *emcl-options*
 
-							  *emcl-options-enabled*
-enabled		(string or table)
+enabled		(string or table)			  *emcl-options-enabled*
 		In default, all mappings are set in calling `setup()`. If you
 		want to use some mappings only, you can use this option with a
 		table containing names.
@@ -132,7 +131,7 @@ enabled		(string or table)
 <
 		Default: `"all"`
 
-mappings	(table)
+mappings	(table)					 *emcl-options-mappings*
 		You can set your own mappings here. This is merged into the
 		default mapping table, so you need not to define all mappings
 		you use.
@@ -150,8 +149,7 @@ mappings	(table)
 <
 		Default: a table with default mappings
 
-						    *emcl-options-no_map_at_end*
-no_map_at_end	(table)
+no_map_at_end	(table)				    *emcl-options-no_map_at_end*
 		Some mappings are already used in Vim. You can use these
 		mappings at the end of the line, and |emcl|'s mappings at other
 		positions. See |c_CTRL-F|, |c_CTRL-E|, |c_CTRL-D|, |c_CTRL-K|.
@@ -159,14 +157,13 @@ no_map_at_end	(table)
 		Default:
 		`{ "ForwardChar", "EndOfLine", "DeleteChar", "KillLine" }`
 
-						  *emcl-options-only_when_empty*
-only_when_empty	(string)
+only_when_empty	(string)			  *emcl-options-only_when_empty*
 		Like |emcl-options-no_map_at_end|, you can avoid some mappings
 		to use them only when the command line is empty. See |c_CTRL-R|.
 
 		Default: `{ "SearchCommandLine" }`
 
-old_map_prefix	(string)
+old_map_prefix	(string)			   *emcl-options-old_map_prefix*
 		When `setup()` is called, mappings overwrites existing ones, but
 		you can still call the original with <C-o> prefix. For example,
 		`ForwardChar` overwrites |c_CTRL-F|, but you can call it with
@@ -178,6 +175,7 @@ old_map_prefix	(string)
 
 		Default: `"<C-o>"`
 
+					*emcl-options-word_char_character_class*
 word_char_character_class	(string)
 		Some mappings detects "word" by this regexp character class.
 		This should be written not with Lua's search pattern but with
@@ -185,7 +183,7 @@ word_char_character_class	(string)
 
 		Default: `"a-zA-Z0-9_À-ÖØ-öø-ÿ"`
 
-max_undo_history	(number)
+max_undo_history	(number)		 *emcl-options-max_undo_history*
 		You can restore a previous command line with `Undo` (<C-_>,
 		<C-x><C-y>). This plugin stores undo history with this count
 		apart from |cmdline-history|.
