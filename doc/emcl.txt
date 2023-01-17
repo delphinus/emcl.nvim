@@ -24,16 +24,16 @@ This plugin enables to use Emacs-like mappings in the command line.
 INSTALL								  *emcl-install*
 
 Clone this repo into the dir for |packages|.
->
+>bash
 	git clone https://github.com/delphinus/emcl.nvim \
 	  ~/.local/share/nvim/site/pack/foo/start/emcl.nvim
 
 And call `setup()` in your |init.lua|.
->
+>lua
 	require("emcl").setup {}
 
 Or you can use any your favorite plugin manager.
->
+>lua
 	-- for packer.nvim
 	use {
 	  "delphinus/emcl.nvim",
@@ -102,7 +102,7 @@ Push <C-y> to yank cut chars
 USAGE								*emcl-usage*
 
 Configuration example.
->
+>lua
 	require("emcl").setup {
 	  enabled = { "ForwardChar", "EndOfLine", "DeleteChar", "Undo" },
 	  mappings = {
@@ -124,7 +124,7 @@ enabled		(string or table)			  *emcl-options-enabled*
 		In default, all mappings are set in calling `setup()`. If you
 		want to use some mappings only, you can use this option with a
 		table containing names.
->
+>lua
 		require("emcl").setup {
 		  enabled = { "ForwardChar", "EndOfLine" },
 		}
@@ -138,7 +138,7 @@ mappings	(table)					 *emcl-options-mappings*
 		When `enabled` is not `"all"` (and have a table with mapping
 		names), entries that key is not included in `enabled` table will
 		be ignored.
->
+>lua
 		-- Use custom mapping for ForwardChar and use default ones for
 		-- others.
 		require("emcl").setup {
